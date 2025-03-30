@@ -46,5 +46,7 @@ while algo_choice not in ("a", "b"):
 if algo_choice == "b":
     problem.bruteforce()
 elif algo_choice == "a":
-    print("Simulated annealing selected — functionality not implemented yet.")
-    pass
+    T0 = int(input("Enter T0: "))
+    T_stop = int(input("Enter T_stop: "))
+    alpha = float(input("Enter alpha: "))
+    problem.simulated_annealing(T0, T_stop, alpha)

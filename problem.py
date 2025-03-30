@@ -2,11 +2,12 @@ import random
 import os
 import itertools
 import time
+from simulated_annealing import simulated_annealing_func
 
 
 class Problem():
     def __init__(self, from_file, file_name = None, machines_no = None, tasks_no = None, times_range = None, seed = None):
-        self.tasks = []
+        self.tasks = {}
         
         if from_file == 0:
             if machines_no == None or tasks_no == None or times_range == None:
@@ -42,12 +43,12 @@ class Problem():
                                 print(f"Error: Incorrect data format in line {i + 1}, column {j + 1}, should be an integer and currently it is {items_in_line[j]}")
                                 return 
                             
-                        self.tasks.append(tasks_to_append)
+                        self.tasks[i] = tasks_to_append
                 self.printTasks()
         
     def printTasks(self):
-        for i in range(len(self.tasks)):
-            print(f"T{i+1}",":",self.tasks[i])
+        for key, val in self.tasks.items():
+            print(f"T{key}",":",val)
             
     def bruteforce(self):
             if not self.tasks:
@@ -55,7 +56,7 @@ class Problem():
                 return
 
             num_tasks = len(self.tasks)
-            num_machines = len(self.tasks[0])
+            num_machines = len(self.tasks[1])
             best_order = None
             best_makespan = float('inf')
 
@@ -64,7 +65,7 @@ class Problem():
 
                 for i, task_idx in enumerate(perm):
                     for j in range(num_machines):
-                        time = self.tasks[task_idx][j]
+                        time = self.tasks[task_idx+1][j]
                         if i == 0 and j == 0:
                             completion[i][j] = time
                         elif i == 0:
@@ -81,4 +82,10 @@ class Problem():
 
             print("\nBest order of tasks:", [f"T{i+1}" for i in best_order])
             print("Minimum makespan:", best_makespan)
+
+    def simulated_annealing(self, T0, T_stop, alpha):
+        best_order, best_makespan = simulated_annealing_func(self.tasks, T0, T_stop, alpha)
+        print("\nBest order of tasks:", [f"T{i}" for i in best_order])
+        print("Minimum makespan:", best_makespan)
+
                 
