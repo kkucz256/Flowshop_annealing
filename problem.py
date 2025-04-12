@@ -2,7 +2,7 @@ import random
 import os
 import itertools
 import time
-from simulated_annealing import simulated_annealing_func
+import numpy as np
 
 
 class Problem():
@@ -49,6 +49,22 @@ class Problem():
     def printTasks(self):
         for key, val in self.tasks.items():
             print(f"T{key}",":",val)
+
+    def makespan(self, order):
+        matrix = []
+        for i, current_task in enumerate(order):
+            row = []
+            for j, task_time in enumerate(self.tasks[current_task]):
+                if i == 0 and j == 0:
+                    row.append(task_time)
+                elif i == 0 and j !=0:
+                    row.append(task_time + row[j-1])
+                elif j==0:
+                    row.append(task_time + matrix[i-1][j])
+                else:
+                    row.append(task_time + max(row[j-1], matrix[i-1][j]))
+            matrix.append(row)
+        return matrix[-1][-1]
             
     def bruteforce(self):
             if not self.tasks:
@@ -60,32 +76,46 @@ class Problem():
             best_order = None
             best_makespan = float('inf')
 
-            for perm in itertools.permutations(range(num_tasks)):
-                completion = [[0] * num_machines for _ in range(num_tasks)]
-
-                for i, task_idx in enumerate(perm):
-                    for j in range(num_machines):
-                        time = self.tasks[task_idx+1][j]
-                        if i == 0 and j == 0:
-                            completion[i][j] = time
-                        elif i == 0:
-                            completion[i][j] = completion[i][j - 1] + time
-                        elif j == 0:
-                            completion[i][j] = completion[i - 1][j] + time
-                        else:
-                            completion[i][j] = max(completion[i - 1][j], completion[i][j - 1]) + time
-
-                makespan = completion[-1][-1]
+            for perm in itertools.permutations(range(1, num_tasks+1)):
+                makespan = self.makespan(perm)
                 if makespan < best_makespan:
                     best_makespan = makespan
                     best_order = perm
 
-            print("\nBest order of tasks:", [f"T{i+1}" for i in best_order])
-            print("Minimum makespan:", best_makespan)
+            return best_order, best_makespan
 
     def simulated_annealing(self, T0, T_stop, alpha):
-        best_order, best_makespan = simulated_annealing_func(self.tasks, T0, T_stop, alpha)
-        print("\nBest order of tasks:", [f"T{i}" for i in best_order])
-        print("Minimum makespan:", best_makespan)
+        if not self.tasks:
+            print("No tasks loaded.")
+            return
 
-                
+        best_order = []
+        best_makespan = float('inf')
+
+        T = T0
+
+        Order = list(range(1, len(self.tasks)+1))
+        random.shuffle(Order)
+        
+
+        while T > T_stop:
+            new_Order = Order[:]
+            i, j = 0, 0
+            while i==j:
+                i, j = random.randint(0, len(Order)-1), random.randint(0, len(Order)-1)
+            new_Order[i], new_Order[j] = new_Order[j], new_Order[i]
+
+            Order_makespan = self.makespan(Order)
+            new_Order_makespan = self.makespan(new_Order)
+
+            diff = new_Order_makespan - Order_makespan
+
+            if diff <= 0 or random.random() < np.exp((-1)*diff/T):
+                Order = new_Order
+                if new_Order_makespan < best_makespan:
+                    best_order = Order[:]
+                    best_makespan = new_Order_makespan
+            
+            T *= alpha
+
+        return best_order, best_makespan
