@@ -10,19 +10,22 @@ class Problem():
         self.tasks = {}
         
         if from_file == 0:
-            if machines_no == None or tasks_no == None or times_range == None:
+            if machines_no is None or tasks_no is None or times_range is None:
                 print("Missing parameters, if you don't want to generate from file, provide all parameters")
                 return
             else:
                 if seed is None:
-                    random.seed(int(time.time()*1000))
+                    random.seed(int(time.time() * 1000))
                 else:
                     random.seed(seed)
-                for _ in range(tasks_no):
-                    tasks = random.sample(range(times_range[0],times_range[1]), machines_no)
-                    self.tasks.append(tasks)
+
+                self.tasks = {}
+                for task_id in range(1, tasks_no + 1):
+                    tasks = random.choices(range(times_range[0], times_range[1] + 1), k=machines_no)
+                    self.tasks[task_id] = tasks
+
                 self.printTasks()
-            
+
         elif from_file == 1:
             if file_name == None:
                 print("Missing file name, if you want to generate from file, provide a valid file name")

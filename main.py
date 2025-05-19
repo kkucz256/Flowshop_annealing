@@ -28,15 +28,17 @@ else:
             print("Maximum processing time must be greater than minimum.")
             exit()
 
-        seed_input = input("Enter seed value for random generation (optional, press Enter to skip): ")
+        seed_input = input("Enter seed value for random generation: ")
         seed = int(seed_input) if seed_input.strip() != "" else None
-
+        
         times_range = (times_min, times_max)
         problem = Problem(from_file=0, machines_no=machines_no, tasks_no=tasks_no, times_range=times_range, seed=seed)
+        problem.printTasks()
 
     except ValueError:
         print("Invalid input. Please enter numeric values.")
         exit()
+    
 
 
 algo_choice = ""
