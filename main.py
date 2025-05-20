@@ -42,8 +42,8 @@ else:
 
 
 algo_choice = ""
-while algo_choice not in ("a", "b"):
-    algo_choice = input("Choose algorithm: (a - simulated annealing, b - brute force): ").lower()
+while algo_choice not in ("a", "b", "n"):
+    algo_choice = input("Choose algorithm: (a - simulated annealing, b - brute force, n - neh): ").lower()
 
 if algo_choice == "b":
     best_order, best_makespan = problem.bruteforce()
@@ -54,5 +54,9 @@ elif algo_choice == "a":
     T_stop = int(input("Enter T_stop: "))
     alpha = float(input("Enter alpha: "))
     best_order, best_makespan = problem.simulated_annealing(T0, T_stop, alpha)
+    print("\nBest order of tasks:", [f"T{i}" for i in best_order])
+    print("Minimum makespan:", best_makespan)
+if algo_choice == "n":
+    best_order, best_makespan = problem.neh()
     print("\nBest order of tasks:", [f"T{i}" for i in best_order])
     print("Minimum makespan:", best_makespan)

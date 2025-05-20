@@ -122,3 +122,27 @@ class Problem():
             T *= alpha
 
         return best_order, best_makespan
+    
+    def neh(self):
+        if not self.tasks:
+            print("No tasks loaded.")
+            return
+
+        total_times = {task_id: sum(times) for task_id, times in self.tasks.items()}
+        sorted_tasks = sorted(total_times, key=total_times.get, reverse=True)
+
+        partial_schedule = [sorted_tasks[0]]
+        for task in sorted_tasks[1:]:
+            best_makespan = float('inf')
+            best_schedule = []
+
+            for i in range(len(partial_schedule) + 1):
+                temp_schedule = partial_schedule[:i] + [task] + partial_schedule[i:]
+                current_makespan = self.makespan(temp_schedule)
+                if current_makespan < best_makespan:
+                    best_makespan = current_makespan
+                    best_schedule = temp_schedule
+
+            partial_schedule = best_schedule
+
+        return partial_schedule, self.makespan(partial_schedule)
