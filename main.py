@@ -1,4 +1,5 @@
 from problem import Problem
+import time
 
 
 print("Welcome to flowshop scheduling problem solver!")
@@ -46,17 +47,26 @@ while algo_choice not in ("a", "b", "n"):
     algo_choice = input("Choose algorithm: (a - simulated annealing, b - brute force, n - neh): ").lower()
 
 if algo_choice == "b":
+    start = time.perf_counter()
     best_order, best_makespan = problem.bruteforce()
+    end = time.perf_counter()
     print("\nBest order of tasks:", [f'T{i}' for i in best_order])
     print("Minimum makespan:", best_makespan)
+    print(f'Processing time: {end - start:.6f}')
 elif algo_choice == "a":
     T0 = int(input("Enter T0: "))
     T_stop = int(input("Enter T_stop: "))
     alpha = float(input("Enter alpha: "))
+    start = time.perf_counter()
     best_order, best_makespan = problem.simulated_annealing(T0, T_stop, alpha)
+    end = time.perf_counter()
     print("\nBest order of tasks:", [f"T{i}" for i in best_order])
     print("Minimum makespan:", best_makespan)
+    print(f'Processing time: {end - start:.6f}')
 if algo_choice == "n":
+    start = time.perf_counter()
     best_order, best_makespan = problem.neh()
     print("\nBest order of tasks:", [f"T{i}" for i in best_order])
+    end = time.perf_counter()
     print("Minimum makespan:", best_makespan)
+    print(f'Processing time: {end - start:.6f}')
